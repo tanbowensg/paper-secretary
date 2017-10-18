@@ -1,0 +1,26 @@
+<div id="wrapper">
+  <!-- <nav id="navbar">
+    <div class="tab" :class="{active: tab === 'format'}" @click="changeTab('format')">文本格式化</div>
+    <div class="tab" :class="{active: tab === 'more'}" @click="changeTab('more')">更多</div>
+  </nav> -->
+  <div class="main convert-area" v-show="tab === 'format'">
+    <div id="origin-area">
+      <h4>原始文本</h4>
+      <textarea id="origin-text" v-model="text"></textarea>
+    </div>
+    <div class="convert">
+      <button class="dao-btn ghost convert-button" @click="format('cn')">
+        <svg viewBox="0 0 32 32" id="icon_arrow-right" width="100%" height="100%">
+          <polygon points="26 16 16 6 16 12 6 12 6 20 16 20 16 26 26 16"></polygon>
+        </svg>
+      </button>
+    </div>
+    <div id="result-area">
+      <h4>转换结果</h4>
+      <div id="result-text">{{result}}</div>
+    </div>
+  </div>
+  <footer>
+    论文小秘书 © tanbowensg@gmail.com All Rights Reserved
+  </footer>
+</div>

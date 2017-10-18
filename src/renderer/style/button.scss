@@ -1,0 +1,381 @@
+$font-base: 14px;
+
+// Options
+//
+// Quickly modify global styling by enabling or disabling optional features.
+
+$enable-shadows:            true !default;
+$enable-transitions:        false !default;
+$enable-hover-media-query:  false !default;
+
+
+// Toggles
+//
+// Used in conjunction with global variables to enable certain theme features.
+@mixin box-shadow($shadow...) {
+  @if $enable-shadows {
+    box-shadow: $shadow;
+  }
+}
+
+@mixin drop-shadow($shadow...) {
+  @if $enable-shadows {
+    filter: drop-shadow($shadow);
+    // IE 10+
+    @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+      // fallback to box-shadow
+      box-shadow: $shadow;
+    }
+  }
+}
+
+
+@mixin text-shadow($shadow...) {
+  text-shadow: $shadow;
+}
+
+@mixin transition($transition...) {
+  @if $enable-transitions {
+    transition: $transition;
+  }
+}
+
+@mixin box-sizing($box-sizing) {
+  box-sizing: $box-sizing;
+  & *,
+  & *::before,
+  & *::after {
+    box-sizing: inherit;
+  }
+}
+
+@function shade($color, $percentage) {
+  @return mix(black, $color, $percentage);
+}
+
+@mixin hover {
+  @if $enable-hover-media-query {
+    // See Media Queries Level 4: http://drafts.csswg.org/mediaqueries/#hover
+    // Currently shimmed by https://github.com/twbs/mq4-hover-shim
+    @media (hover: hover) {
+      &:hover {
+        @content;
+      }
+    }
+  }
+  @else {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+@mixin hover-focus {
+  @if $enable-hover-media-query {
+    @include hover {
+      @content;
+    }
+    &:focus {
+      @content;
+    }
+  }
+  @else {
+    &:focus,
+    &:hover {
+      @content;
+    }
+  }
+}
+
+@mixin tab-focus() {
+  // WebKit-specific. Other browsers will keep their default outline style.
+  // (Initially tried to also force default via `outline: initial`,
+  // but that seems to erroneously remove the outline in Firefox altogether.)
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+@mixin clearfix() {
+  &:before,
+  &:after {
+    display: table; // 2
+
+    content: ' '; // 1
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+// Replace `$search` with `$replace` in `$string`
+// @param {String} $string - Initial string
+// @param {String} $search - Substring to replace
+// @param {String} $replace ('') - New value
+// @return {String} - Updated string
+@function str-replace($string, $search, $replace: '') {
+  $index: str-index($string, $search);
+
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+
+  @return $string;
+}
+
+// Convert svg into data url
+@function svg-inline($string){
+  $result: $string;
+  $result: str-replace($string, "<svg", "<svg xmlns='http://www.w3.org/2000/svg'");
+  $result: str-replace($result, '%', '%25');
+  $result: str-replace($result, '#', '%23');
+  $result: str-replace($result, '"', '%22');
+  $result: str-replace($result, "'", '%27');
+  $result: str-replace($result, ' ', '%20');
+  $result: str-replace($result, '<', '%3C');
+  $result: str-replace($result, '>', '%3E');
+  @return "data:image/svg+xml;utf8," + $result;
+}
+
+$btn-padding-y: 8px !default;
+$btn-padding-x: 17px !default;
+$btn-svg-size: 16px;
+$font-size-base: 14px !default;
+$btn-font-weight: normal !default;
+$cursor-disabled: not-allowed !default;
+$btn-icon-padding-x: 6px;
+$btn-icon-padding-y: $btn-padding-y - ($btn-svg-size - $font-size-base) / 2;
+$btn-has-icon-padding-y: $btn-icon-padding-y;
+$btn-border-radius-base: 4px;
+$line-height-base: 1;
+$border-width: 1px !default;
+$btn-line-height: 1.25 !default;
+$input-btn-border-width: $border-width !default;
+$btn-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 1px 1px rgba(0, 0, 0, .08);
+$btn-text-shadow: 0 -1px 0 rgba(0, 0, 0, .1);
+$btn-active-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+// ?? dao button active 使用的
+// $btn-active-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+$btn-active-box-shadow: inset 0 0 8px rgba(0, 0, 0, .04);
+$btn-disabled-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9),
+                  0 1px 0 rgba(255, 255, 255, .9);
+$btn-disabled-text-shadow: 0 1px 0 rgba(255, 255, 255, .9);
+$black-dark: #3d444f;
+$grey-light: #ccd1d9;
+$buttons: (
+  'blue': #3890ff,
+  'green': #22c36a,
+  'yellow': #f7b32b,
+  'orange': #f56e25,
+  'red': #f1483f,
+  'purple': #7354e2,
+  'grey': $grey-light
+);
+
+@mixin button-variant($color, $background, $border) {
+  $generate-colors: generate-color($background);
+
+  color: $color;
+  border-color: $border;
+  background-color: $background;
+  background-image: linear-gradient(to top, rgba(255, 255, 255, .06) 0%, rgba(255, 255, 255, .06) 100%),
+  linear-gradient(to top, rgba(map_get($generate-colors, 'darken'), .5) 0%,
+  rgba(map_get($generate-colors, 'lighten'), .5) 100%);
+  box-shadow: $btn-box-shadow;
+  text-shadow: $btn-text-shadow;
+
+  &:hover {
+    background-image: linear-gradient(to top, rgba(map_get($generate-colors, 'darken'), .5) 0%,
+    rgba(map_get($generate-colors, 'lighten'), .5) 100%);
+  }
+  &:active,
+  &.active {
+    background-image: none;
+    box-shadow: $btn-active-box-shadow;
+  }
+}
+
+@function generate-color($base-color) {
+  @return (
+  'lighten': lighten($base-color, 4),
+  'base':$base-color,
+  'border': desaturate(darken($base-color, 7), 11),
+  'darken': desaturate(darken($base-color, 13), 7),
+  );
+}
+
+@mixin button-size($btn-padding-y, $btn-padding-x, $font-size-base, $line-height-base, $btn-border-radius-base) {
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+
+  padding: $btn-padding-y $btn-padding-x;
+
+  border-radius: $btn-border-radius-base;
+}
+
+
+// Base styles
+// --------------------------------------------------
+.dao-btn {
+  display: inline-block;
+  font-weight: $btn-font-weight;
+
+  border: $input-btn-border-width solid transparent;
+  outline: none !important; // TODO 加上这边的备注
+  background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  white-space: nowrap;
+
+  @include box-sizing('border-box');
+  @include button-size($btn-padding-y, $btn-padding-x, $font-size-base, $line-height-base, $btn-border-radius-base);
+  @include transition(all 0.2s ease-in-out);
+  @include hover-focus {
+    text-decoration: none;
+  }
+  &,
+  &:active,
+  &.active {
+    &:focus,
+    &.focus {
+      @include tab-focus();
+    }
+  }
+  &.focus {
+    text-decoration: none;
+  }
+  &:active,
+  &.active {
+    outline: 0;
+    background-image: none;
+  }
+}
+
+a.dao-btn {
+  &.disabled,
+  fieldset[disabled] & {
+    pointer-events: none; // Future-proof disabling of clicks on `<a>` elements
+  }
+}
+
+.dao-btn.ghost {
+  color: $black-dark;
+  border-color: $grey-light;
+  background: none;
+
+  @include box-shadow($btn-disabled-box-shadow);
+  @include text-shadow($btn-disabled-text-shadow);
+  &:hover {
+    background-color: rgba($grey-light, 0.1);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+  &:active,
+  &.active {
+    background-color: rgba($grey-light, 0.15);
+    box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.07),
+    inset 0 0 4px 0 rgba(0, 0, 0, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+}
+
+@each $key, $value in $buttons {
+  $generate-colors: generate-color($value);
+  .dao-btn.#{$key} {
+    @include button-variant(#FFFFFF, $value, map_get($generate-colors, 'border'));
+  }
+  // TODO 在生产环境的时候删除这段代码
+  .color-card {
+    @include clearfix();
+    &.#{$key} {
+      > div {
+        display: block;
+        float: left;
+
+        width: 50px;
+        height: 50px;
+      }
+      > div:first-child {
+        background-color: map_get($generate-colors, 'lighten');
+      }
+      > div:nth-child(2) {
+        background-color: map_get($generate-colors, 'base');
+      }
+      > div:nth-child(3) {
+        background-color: map_get($generate-colors, 'border');
+      }
+      > div:nth-child(4) {
+        background-color: map_get($generate-colors, 'darken');
+      }
+    }
+  }
+}
+
+// .dao-btn.disabled style
+.dao-btn {
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    color: $grey-light;
+    border-color: $grey-light !important;
+    background: none !important;
+
+    cursor: $cursor-disabled;
+    pointer-events: none;
+
+    @include box-shadow($btn-disabled-box-shadow!important);
+    @include text-shadow($btn-disabled-text-shadow);
+  }
+}
+
+// .dao-btn has svg icon
+.dao-btn {
+  $btn-has-icon-compact-padding-x: 10px;
+  svg {
+    width: $btn-svg-size;
+    height: $btn-svg-size;
+
+    fill: currentColor;
+  }
+  &.dao-icon {
+    padding: $btn-icon-padding-y $btn-icon-padding-x;
+  }
+  &.has-icon {
+    padding-top: $btn-has-icon-padding-y;
+    padding-bottom: $btn-has-icon-padding-y;
+    .text {
+      display: inline-block;
+      margin:0 0 0 0;
+    }
+    svg.icon {
+      display: inline-block;
+    }
+    svg.icon + .text {
+      margin:0 0 0 5px;
+    }
+    .text + svg.icon {
+      margin-left: 5px;
+    }
+  }
+
+  &.has-icon.compact {
+    padding: $btn-has-icon-padding-y $btn-has-icon-compact-padding-x;
+    .text {
+      margin: 0 8px 0 5px;
+    }
+    svg.icon + .text {
+        margin: 0 5px 0 8px;
+    }
+    .text + svg.icon {
+      margin-left: 0px;
+    }
+  }
+}
+
+.dao-btn {
+  &.btn-sm {
+    font-size: 13px;
+    line-height: 24px;
+    padding: 0 10px;
+  }
+}
