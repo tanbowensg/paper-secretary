@@ -20,6 +20,7 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
+    title: '论文小秘书',
     height: 563,
     useContentSize: true,
     width: 1000

@@ -19,7 +19,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "paper-secretary",
+    "productName": "论文小秘书",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"
