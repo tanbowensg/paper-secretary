@@ -1,3 +1,5 @@
+import { clipboard } from 'electron'
+
 // 中文替换表
 const replaceTableCN = [
   [/\n/g, ''],
@@ -45,6 +47,7 @@ export default {
       })
 
       this.result = result
+      clipboard.writeText(result)
     }
   }
 }

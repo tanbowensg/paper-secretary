@@ -6,7 +6,7 @@
   <div class="main convert-area" v-show="tab === 'format'">
     <div id="origin-area">
       <h4>原始文本</h4>
-      <textarea id="origin-text" v-model="text"></textarea>
+      <textarea id="origin-text" placeholder="请将要转换的文本复制到这里" v-model="text"></textarea>
     </div>
     <div class="convert">
       <button class="dao-btn ghost convert-button" @click="format('cn')">
@@ -17,7 +17,7 @@
     </div>
     <div id="result-area">
       <h4>转换结果</h4>
-      <div id="result-text">{{result}}</div>
+      <textarea id="origin-text" placeholder="转换结果会自动复制到剪贴板" v-model="result"></textarea>
     </div>
   </div>
   <footer>
